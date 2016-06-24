@@ -6,8 +6,11 @@
 
 The easiest way to get a tor network up and running is to use the docker-compose create and then scale function
 
+`docker-compose up` 
+
+CTRL+C to cancel out (docker-compose scale issue. fixing soon)
+
 ```
-docker-ccompose create
 docker-compose scale da=3 relay=5 exit=3 client=1
 ```
 
