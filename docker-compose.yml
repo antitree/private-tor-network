@@ -1,0 +1,50 @@
+version: '2'
+services:
+ da:
+  image: antitree/tor-server
+  #restart: always
+  expose:
+    - "7000"
+    - "9030"
+    - "54444"
+  environment:
+    ## set your Nickname here (only use letters and numbers)
+    #TOR_NICKNAME: DA1
+    ROLE: DA
+    ## an email address to contact you
+    #CONTACT_EMAIL: email@example.org
+  volumes:
+    ## mount custom torrc / secret_id_key here
+    - ./tor:/tor
+ relay:
+  image: antitree/tor-server
+  expose:
+    - "7000"
+    - "9030"
+  environment:
+    ROLE: RELAY
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    - da
+ exit:
+  image: antitree/tor-server
+  expose:
+    - "7000"
+    - "9030"
+  environment:
+    ROLE: EXIT
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    - da
+ client:
+  image: antitree/tor-server
+  ports:
+    - "9050:9050"
+  volumes:
+    - ./tor:/tor
+  environment:
+    ROLE: CLIENT
+  depends_on: 
+    - da

@@ -1,0 +1,117 @@
+#!/bin/bash
+set -o errexit
+
+# Fudge the sleep to try and keep the consensus
+#FUDGE=$(( ( RANDOM % 100) + 20 ))
+FUDGE=10
+
+echo -e "\n========================================================"
+# If DataDirectory or secret_id_key is mounted here, it must be owned by the debian-tor user
+chown -Rv debian-tor:debian-tor ${TOR_DIR}
+
+if [ ! -e /tor-config-done ]; then
+    touch /tor-config-done   # only run this once
+
+    # Set appropriate network information
+    
+
+    # Add a Nickname, if none has been set in torrc
+    if ! grep -q '^Nickname ' /etc/tor/torrc; then
+        if [ ${TOR_NICKNAME} == "Tor4" ]; then
+            # if user did not change the default Nickname, genetrate a random pronounceable one
+            RPW=$(pwgen -0A 10)
+            export TOR_NICKNAME=${ROLE}${RPW}
+            echo "Setting random Nickname: ${TOR_NICKNAME}"
+        else
+            echo "Setting chosen Nickname: ${TOR_NICKNAME}"
+        fi
+        echo -e "\nNickname ${TOR_NICKNAME}" >> /etc/tor/torrc
+    fi
+
+    # Add ContactInfo from env variable, if none has been set in torrc
+    if ! grep -q '^ContactInfo ' /etc/tor/torrc; then
+        if [  -n "${CONTACT_EMAIL}" ]; then
+            echo "Setting Contact Email: ${CONTACT_EMAIL}"
+            echo -e "\nContactInfo ${CONTACT_EMAIL}" >> /etc/tor/torrc
+        fi
+    fi
+
+    echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
+
+    case ${ROLE} in
+      DA)
+        echo "Setting role to DA"
+	cat /etc/tor/torrc.da >> /etc/tor/torrc
+	#if [ -n "${TOR_ORPORT}" ]; then
+	#  TOR_ORPORT=${TOR_ORPORT}
+        #else
+	#  TOR_ORPORT=7000
+ 	#fi
+	echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
+	echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
+	#echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
+	echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
+	KEYPATH=${TOR_DIR}/${TOR_NICKNAME}/keys
+	mkdir -p ${KEYPATH}
+	TOR_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+	echo "Address ${TOR_IP}" >> /etc/tor/torrc
+	chown -Rv debian-tor:debian-tor ${TOR_DIR}
+	echo "password" | tor-gencert --create-identity-key -m 12 -a ${TOR_IP}:${TOR_DIRPORT} \
+            -i ${KEYPATH}/authority_identity_key \
+            -s ${KEYPATH}/authority_signing_key \
+            -c ${KEYPATH}/authority_certificate \
+	    --passphrase-fd 0
+	chown -Rv debian-tor:debian-tor ${TOR_DIR}
+	tor --list-fingerprint --orport 1 \
+    	    --dirserver "x 127.0.0.1:1 ffffffffffffffffffffffffffffffffffffffff" \
+	    --datadirectory ${TOR_DIR}/${TOR_NICKNAME}
+	echo "Saving DA fingerprint to shared path"
+	da_fingerprint >> ${TOR_DIR}/torrc.da
+	echo "Waiting for other DA's to come up..."
+	sleep $FUDGE
+	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
+        ;;
+      RELAY)
+        echo "Setting role to RELAY"
+ 	echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
+        echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
+        #echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
+        echo -e "ExitPolicy accept 172.18.0.0/16:*" >> /etc/tor/torrc
+
+        echo "Waiting for other DA's to come up..."
+        sleep $FUDGE
+        cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
+	;;
+      EXIT)
+        echo "Setting role to EXIT"
+        echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
+        echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
+        #echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
+        echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
+	 echo "Waiting for other DA's to come up..."
+        sleep $FUDGE
+        cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
+        ;;
+      CLIENT)
+        echo "Setting role to CLIENT"
+	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
+	#chown -Rv debian-tor:debian-tor ${TOR_DIR}
+	sleep $FUDGE
+	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
+        ;;
+      *)
+        echo "Role variable missing"
+        exit 1
+        ;;
+    esac
+
+fi
+
+echo -e "\n========================================================"
+# display Tor version & torrc in log
+tor --version
+cat /etc/tor/torrc
+echo -e "========================================================\n"
+
+# else default to run whatever the user wanted like "bash"
+exec "$@"
