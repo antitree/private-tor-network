@@ -8,6 +8,16 @@ The easiest way to get a tor network up and running is to use the docker-compose
 
 `docker-compose scale da=3 relay=5 exit=3 client=1`
 
+### Uses
+
+If you're going "Why do I want this?" here's a few examples:
+
+*tor research*: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. (Originally this project was part of a class I wrote to teach about how tor works)
+
+*tor development*: in the case you're working on a patch that is more complex and requires seeing what happens on the tor network, you can apply the patches to the containers.
+
+*traffic analysis*: Test out the latest tor exploit and pretend to be a nation state adversary.
+
 ### Network Settings
 
 All of the requisit information that other nodes need to know about on the network are stored in a mapped volume: `./tor:/tor`. NOTE: This folder must exist on the host and allow the debian-tor user to create files in this directory. 
@@ -37,6 +47,14 @@ Here are a few things to try if you're runing into issues:
 * Enable verbose logging by changing the `./config/torrc` 
 * Check permissions for your ./tor folder
 * Delete the files in your ./tor folder so you can start from scratch (or specifically the torrc.da file)
+
+### TODO
+
+* Use an environment variable to choose which version of tor to compile
+
+### Dislaimer
+
+This project is in no way associated with the Tor Project or their developers. Like many people I'm a fan of Tor and recommend considering ways you can help the project. Consider running a relay, donating, or writing code. 
 
 ### References
 
