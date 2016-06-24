@@ -39,7 +39,7 @@ Available roles right now are:
 
 ### Tor configuration
 
-This configuration is based on the Tor documentation for how to run a private tor network. You should also check out Chutney[1] which does something similar with separate processes instead of containers. 
+This configuration is based on the Tor documentation for how to run a private tor network. You should also check out Chutney[1] which does something similar with separate processes instead of containers. If you need to make a modification (such as changing the timing of the DA's) edit the `config/torrc` and/or `config/torrc.da` files. You may need to modify the Dockerfile as well. 
 
 ### Debugging
 
@@ -50,11 +50,13 @@ Here are a few things to try if you're runing into issues:
 * Enable verbose logging by changing the `./config/torrc` 
 * Check permissions for your ./tor folder
 * Delete the files in your ./tor folder so you can start from scratch (or specifically the torrc.da file)
+* To cleanup the environment and start over you can use `docker-compose kill` and `docker-compose rm -ra` to remove them all. 
 
 ### TODO
 
 * Use an environment variable to choose which version of tor to compile
 * Get rid of apt-get from docker container
+* Wait for someone to yell at me about using scale like this and then move to the new networking
 
 ### Dislaimer
 
