@@ -4,9 +4,12 @@
 
 ### Quickstart
 
-The easiest way to get a tor network up and running is to use the docker-compose scale function:
+The easiest way to get a tor network up and running is to use the docker-compose create and then scale function
 
-`docker-compose scale da=3 relay=5 exit=3 client=1`
+```
+docker-ccompose create
+docker-compose scale da=3 relay=5 exit=3 client=1
+```
 
 ### Uses
 
