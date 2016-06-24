@@ -51,6 +51,7 @@ Here are a few things to try if you're runing into issues:
 ### TODO
 
 * Use an environment variable to choose which version of tor to compile
+* Get rid of apt-get from docker container
 
 ### Dislaimer
 
