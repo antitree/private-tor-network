@@ -6,7 +6,6 @@ services:
   expose:
     - "7000"
     - "9030"
-    - "54444"
   environment:
     ## set your Nickname here (only use letters and numbers)
     #TOR_NICKNAME: DA1
@@ -20,7 +19,6 @@ services:
   expose:
     - "7000"
     - "9030"
-    - "54444"
   environment:
     ## set your Nickname here (only use letters and numbers)
     #TOR_NICKNAME: DA1
@@ -34,7 +32,6 @@ services:
   expose:
     - "7000"
     - "9030"
-    - "54444"
   environment:
     ## set your Nickname here (only use letters and numbers)
     #TOR_NICKNAME: DA1
@@ -52,6 +49,7 @@ services:
   volumes:
     - ./tor:/tor
   depends_on:
+    # Make sure the DA's are already up
     - da1
     - da2
     - da3
@@ -65,12 +63,14 @@ services:
   volumes:
     - ./tor:/tor
   depends_on:
+    # Make sure the DA's are already up
     - da1
     - da2
     - da3
  client:
   image: antitree/private-tor
   ports:
+    # Setups a listener on host machine
     - "9050:9050"
   volumes:
     - ./tor:/tor
