@@ -1,6 +1,34 @@
 version: '2'
 services:
- da:
+ da1:
+  image: antitree/private-tor
+  #restart: always
+  expose:
+    - "7000"
+    - "9030"
+    - "54444"
+  environment:
+    ## set your Nickname here (only use letters and numbers)
+    #TOR_NICKNAME: DA1
+    ROLE: DA
+  volumes:
+    ## Needed to keep track of other nodes
+    - ./tor:/tor
+ da2:
+  image: antitree/private-tor
+  #restart: always
+  expose:
+    - "7000"
+    - "9030"
+    - "54444"
+  environment:
+    ## set your Nickname here (only use letters and numbers)
+    #TOR_NICKNAME: DA1
+    ROLE: DA
+  volumes:
+    ## Needed to keep track of other nodes
+    - ./tor:/tor
+ da3:
   image: antitree/private-tor
   #restart: always
   expose:
@@ -24,7 +52,9 @@ services:
   volumes:
     - ./tor:/tor
   depends_on:
-    - da
+    - da1
+    - da2
+    - da3
  exit:
   image: antitree/private-tor
   expose:
@@ -35,7 +65,9 @@ services:
   volumes:
     - ./tor:/tor
   depends_on:
-    - da
+    - da1
+    - da2
+    - da3
  client:
   image: antitree/private-tor
   ports:
@@ -45,4 +77,7 @@ services:
   environment:
     ROLE: CLIENT
   depends_on: 
-    - da
+    - da1
+    - da2
+    - da3
+
