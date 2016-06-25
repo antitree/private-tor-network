@@ -17,7 +17,7 @@ This will create 3 directory authorities (DA's), 1 client listning on port 9050,
 
 If you're going "Why do I want this?" here's a few examples:
 
-**tor research**: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. (Originally this project was part of a class I wrote to teach about how tor works)
+**tor research**: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. Originally this project was part of a class I wrote to teach about how tor works.
 
 **tor development**: in the case you're working on a patch that is more complex and requires seeing what happens on the tor network, you can apply the patches to the containers.
 
@@ -29,8 +29,14 @@ All of the required information that other nodes need to know about on the netwo
 
 ### Running Individual Roles
 
-This is building a base tor relay container and then modifying it based on ROLE environment variable you give it. For example, this would make a directory authority (DA)
-`docker run -e ROLE=DA antitree/tor-private-server`
+You can manually build a tor network if you don't want to use docker-compose but you'll need to make sure you pass the correct DA fingerprints to each of the servers. (Don't for you automatically with docker-compose) For example, this would make the first directory authority (DA)
+`docker run -e ROLE=DA antitree/private-tor`
+
+Or setup a relay:
+`docker run -e ROLE=RELAY antitree/private-tor`
+
+Watching the logs on a relay
+`docker logs -f {name of your container}`
 
 Available roles right now are:
 
@@ -41,7 +47,15 @@ Available roles right now are:
 
 ### Tor configuration
 
-This configuration is based on the Tor documentation for how to run a private tor network. You should also check out Chutney[1] which does something similar with separate processes instead of containers. If you need to make a modification (such as changing the timing of the DA's) edit the `config/torrc` and/or `config/torrc.da` files. You may need to modify the Dockerfile as well. 
+This configuration is based on the Tor documentation for how to run a private tor network. You should also check out [Chutney](https://gitweb.torproject.org/chutney.git/) which does something similar with separate processes instead of containers. If you need to make a modification (such as changing the timing of the DA's) edit the `config/torrc` and/or `config/torrc.da` files. You may need to modify the Dockerfile as well.
+
+### Environment variables
+
+The container is built off of [chriswayg/tor-server](https://github.com/chriswayg/tor-server) but has been heavily modified to support some other env variables that you can pass to it:
+
+* TOR_ORPORT - default is 7000
+* TOR_DIRPORT - default is 9030
+* TOR_DIR - container path to mount a persistent tor material. default is /tor
 
 ### Debugging
 
@@ -68,7 +82,3 @@ This project is in no way associated with the Tor Project or their developers. L
 
 - https://github.com/chriswayg/tor-server
 - https://www.torproject.org/docs/tor-relay-debian.html.en
-
-[1]: https://gitweb.torproject.org/chutney.git/
-
-
