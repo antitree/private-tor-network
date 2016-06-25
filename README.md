@@ -6,13 +6,12 @@
 
 The easiest way to get a tor network up and running is to use the docker-compose create and then scale function
 
-`docker-compose up` 
-
-CTRL+C to cancel out (docker-compose scale issue. fixing soon)
-
 ```
-docker-compose scale da=3 relay=5 exit=3 client=1
+docker-compose up 
+docker-compose scale relay=5 exit=3 
 ```
+
+This will create 3 directory authorities (DA's), 1 client listning on port 9050, 5 relays, and 3 exits. You can scale to whatever you want. 
 
 ### Uses
 
@@ -26,7 +25,7 @@ If you're going "Why do I want this?" here's a few examples:
 
 ### Network Settings
 
-All of the requisit information that other nodes need to know about on the network are stored in a mapped volume: `./tor:/tor`. NOTE: This folder must exist on the host and allow the debian-tor user to create files in this directory. 
+All of the required information that other nodes need to know about on the network are stored in a mapped volume: `./tor:/tor`. (I know you shouldn't do this but I needed it for a class) NOTE: This folder must exist on the host and allow the debian-tor user to create files in this directory. 
 
 ### Running Individual Roles
 
