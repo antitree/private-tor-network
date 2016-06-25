@@ -17,11 +17,11 @@ This will create 3 directory authorities (DA's), 1 client listning on port 9050,
 
 If you're going "Why do I want this?" here's a few examples:
 
-*tor research*: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. (Originally this project was part of a class I wrote to teach about how tor works)
+**tor research**: learn how tor interacts with nodes, make modifications to settings and see what happens, understand how the Tor Network operates without affecting real people. (Originally this project was part of a class I wrote to teach about how tor works)
 
-*tor development*: in the case you're working on a patch that is more complex and requires seeing what happens on the tor network, you can apply the patches to the containers.
+**tor development**: in the case you're working on a patch that is more complex and requires seeing what happens on the tor network, you can apply the patches to the containers.
 
-*traffic analysis*: Test out the latest tor exploit and pretend to be a nation state adversary.
+**traffic analysis**: Test out the latest tor exploit and pretend to be a nation state adversary.
 
 ### Network Settings
 
