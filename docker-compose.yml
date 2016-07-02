@@ -72,6 +72,7 @@ services:
   ports:
     # Setups a listener on host machine
     - "9050:9050"
+    - "9051:9051"
   volumes:
     - ./tor:/tor
   environment:

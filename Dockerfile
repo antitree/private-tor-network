@@ -74,7 +74,7 @@ RUN mkdir ${TOR_DIR}
 # ORPort, DirPort, ObfsproxyPort
 # TODO make these match the env variables
 # TODO is this necessary anymore?
-EXPOSE 9001 9030 54444
+EXPOSE 9001 9030 9051
 
 ENTRYPOINT ["docker-entrypoint"]
 
