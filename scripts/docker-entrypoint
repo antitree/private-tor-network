@@ -12,8 +12,6 @@ chown -Rv debian-tor:debian-tor ${TOR_DIR}
 if [ ! -e /tor-config-done ]; then
     touch /tor-config-done   # only run this once
 
-    # Set appropriate network information
-
     # Add a Nickname, if none has been set in torrc
     if ! grep -q '^Nickname ' /etc/tor/torrc; then
         if [ ${TOR_NICKNAME} == "Tor4" ]; then
@@ -35,25 +33,27 @@ if [ ! -e /tor-config-done ]; then
         fi
     fi
 
+    # Host specific modifications to the torrc file
     echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
+    TOR_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
+    echo "Address ${TOR_IP}" >> /etc/tor/torrc
+    echo -e "ControlPort 0.0.0.0:9051" >> /etc/tor/torrc
+    if [  -z "${TOR_CONTROL_PWD}" ]; then
+       TOR_CONTROL_PWD="16:AF6137F19DD86B89606B9007F1A2F82F8BEFB19D263DC878B7E1F5E260"
+    fi
+    echo -e "HashedControlPassword ${TOR_CONTROL_PWD}" >> /etc/tor/torrc
 
+
+    # Changes to the torrc file based on the desired role
     case ${ROLE} in
       DA)
         echo "Setting role to DA"
 	cat /etc/tor/torrc.da >> /etc/tor/torrc
-	#if [ -n "${TOR_ORPORT}" ]; then
-	#  TOR_ORPORT=${TOR_ORPORT}
-        #else
-	#  TOR_ORPORT=7000
- 	#fi
 	echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
 	echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
-	#echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
 	echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
 	KEYPATH=${TOR_DIR}/${TOR_NICKNAME}/keys
 	mkdir -p ${KEYPATH}
-	TOR_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/')
-	echo "Address ${TOR_IP}" >> /etc/tor/torrc
 	chown -Rv debian-tor:debian-tor ${TOR_DIR}
 	echo "password" | tor-gencert --create-identity-key -m 12 -a ${TOR_IP}:${TOR_DIRPORT} \
             -i ${KEYPATH}/authority_identity_key \
@@ -67,41 +67,28 @@ if [ ! -e /tor-config-done ]; then
 	echo "Saving DA fingerprint to shared path"
 	da_fingerprint >> ${TOR_DIR}/torrc.da
 	echo "Waiting for other DA's to come up..."
-	sleep $FUDGE
 	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       RELAY)
         echo "Setting role to RELAY"
  	echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
         echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
-        #echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
-        echo -e "ExitPolicy accept 172.18.0.0/16:*" >> /etc/tor/torrc
+        echo -e "ExitPolicy accept private:*" >> /etc/tor/torrc
 
         echo "Waiting for other DA's to come up..."
-        sleep $FUDGE
         cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
 	;;
       EXIT)
         echo "Setting role to EXIT"
         echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
         echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
-        #echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
         echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
 	 echo "Waiting for other DA's to come up..."
-        sleep $FUDGE
         cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       CLIENT)
         echo "Setting role to CLIENT"
 	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
-	echo -e "ControlPort 0.0.0.0:9051" >> /etc/tor/torrc
-	if [  -z "${TOR_CONTROL_PWD}" ]; then
-	   TOR_CONTROL_PWD="16:AF6137F19DD86B89606B9007F1A2F82F8BEFB19D263DC878B7E1F5E260"
-	fi
-	echo -e "HashedControlPassword ${TOR_CONTROL_PWD}" >> /etc/tor/torrc
-
-	#chown -Rv debian-tor:debian-tor ${TOR_DIR}
-	sleep $FUDGE
 	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       *)
@@ -109,6 +96,9 @@ if [ ! -e /tor-config-done ]; then
         exit 1
         ;;
     esac
+
+    # Buffer to let the directory authority list be built
+    sleep $FUDGE
 
 fi
 
