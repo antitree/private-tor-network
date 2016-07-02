@@ -13,7 +13,6 @@ if [ ! -e /tor-config-done ]; then
     touch /tor-config-done   # only run this once
 
     # Set appropriate network information
-    
 
     # Add a Nickname, if none has been set in torrc
     if ! grep -q '^Nickname ' /etc/tor/torrc; then
@@ -95,6 +94,12 @@ if [ ! -e /tor-config-done ]; then
       CLIENT)
         echo "Setting role to CLIENT"
 	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
+	echo -e "ControlPort 0.0.0.0:9051" >> /etc/tor/torrc
+	if [  -z "${TOR_CONTROL_PWD}" ]; then
+	   TOR_CONTROL_PWD="16:AF6137F19DD86B89606B9007F1A2F82F8BEFB19D263DC878B7E1F5E260"
+	fi
+	echo -e "HashedControlPassword ${TOR_CONTROL_PWD}" >> /etc/tor/torrc
+
 	#chown -Rv debian-tor:debian-tor ${TOR_DIR}
 	sleep $FUDGE
 	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
