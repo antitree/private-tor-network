@@ -23,6 +23,8 @@ If you're going "Why do I want this?" here's a few examples:
 
 **traffic analysis**: Test out the latest tor exploit and pretend to be a nation state adversary.
 
+*If this needs to be said, this should never be used as a replacement for tor. This is for research purposes alone.*
+
 ### Network Settings
 
 All of the required information that other nodes need to know about on the network are stored in a mapped volume: `./tor:/tor`. (I know you shouldn't do this but I needed it for a class) NOTE: This folder must exist on the host and allow the debian-tor user to create files in this directory. 
