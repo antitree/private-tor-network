@@ -56,6 +56,17 @@ The container is built off of [chriswayg/tor-server](https://github.com/chrisway
 * TOR_ORPORT - default is 7000
 * TOR_DIRPORT - default is 9030
 * TOR_DIR - container path to mount a persistent tor material. default is /tor
+* 
+### Using With arm
+
+With the tor control port exposed to the host, you can use arm to monitor the client. 
+```
+apt-get install tor-arm
+arm
+```
+NOTE: There is a password to protect the control port right now. Enter "password" when prompted
+
+![arm screenshot](https://raw.githubusercontent.com/antitree/private-tor-network/master/doc/arm.png)
 
 ### Debugging
 
