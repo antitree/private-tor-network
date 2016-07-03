@@ -3,7 +3,7 @@ set -o errexit
 
 # Fudge the sleep to try and keep the consensus
 #FUDGE=$(( ( RANDOM % 100) + 20 ))
-FUDGE=10
+FUDGE=30
 
 echo -e "\n========================================================"
 # If DataDirectory or secret_id_key is mounted here, it must be owned by the debian-tor user
@@ -67,7 +67,6 @@ if [ ! -e /tor-config-done ]; then
 	echo "Saving DA fingerprint to shared path"
 	da_fingerprint >> ${TOR_DIR}/torrc.da
 	echo "Waiting for other DA's to come up..."
-	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       RELAY)
         echo "Setting role to RELAY"
@@ -76,7 +75,6 @@ if [ ! -e /tor-config-done ]; then
         echo -e "ExitPolicy accept private:*" >> /etc/tor/torrc
 
         echo "Waiting for other DA's to come up..."
-        cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
 	;;
       EXIT)
         echo "Setting role to EXIT"
@@ -84,12 +82,10 @@ if [ ! -e /tor-config-done ]; then
         echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
         echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
 	 echo "Waiting for other DA's to come up..."
-        cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       CLIENT)
         echo "Setting role to CLIENT"
 	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
-	cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
         ;;
       *)
         echo "Role variable missing"
@@ -99,6 +95,8 @@ if [ ! -e /tor-config-done ]; then
 
     # Buffer to let the directory authority list be built
     sleep $FUDGE
+    cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
+
 
 fi
 
