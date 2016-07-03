@@ -1,5 +1,5 @@
 # Run Tor as a regular user (do not change this)
-User debian-tor
+#User debian-tor
 
 TestingTorNetwork 1
 
