@@ -56,7 +56,8 @@ The container is built off of [chriswayg/tor-server](https://github.com/chrisway
 * TOR_ORPORT - default is 7000
 * TOR_DIRPORT - default is 9030
 * TOR_DIR - container path to mount a persistent tor material. default is /tor
-* 
+* TOR_CONTROL_PWD - set the control port password to something besides "password"
+
 ### Using With arm
 
 With the tor control port exposed to the host, you can use arm to monitor the client. 
