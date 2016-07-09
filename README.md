@@ -71,6 +71,30 @@ NOTE: There is a password to protect the control port right now. Enter "password
 
 ![arm screenshot](https://raw.githubusercontent.com/antitree/private-tor-network/master/doc/arm.png)
 
+### Things to try
+
+The `/util/` directory contains a few scripts to play with one the host computer. Once you have a 
+private tor network up and running you can try out some of the tools in there. 
+
+**Get Consensus**:
+
+```python util/get_consensus.py```
+
+This will connect to the CLIENT docker container via the tor Control Port and download the consensus which
+contains the nicknames and IPs of the relays on the network. (If this is blank, you may have to wait 30s
+while they decided on a consensus.)
+
+**Tor-prompt**:
+
+If you've installed arm you will probably also have the `tor-prompt` command. You can use it to manually 
+gather information about some of the containers that have their Control Port exposed like so:
+
+```
+tor-prompt -i {ip_of_ontainer}:9051
+Control Port password: password
+```
+
+
 ### Debugging
 
 Here are a few things to try if you're runing into issues:
@@ -84,8 +108,6 @@ Here are a few things to try if you're runing into issues:
 
 ### TODO
 
-* Use an environment variable to choose which version of tor to compile
-* Get rid of apt-get from docker container
 * Wait for someone to yell at me about using scale like this and then move to the new networking
 
 ### Dislaimer
