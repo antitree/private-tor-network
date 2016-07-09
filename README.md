@@ -60,7 +60,12 @@ The container is built off of [chriswayg/tor-server](https://github.com/chrisway
 * TOR_DIR - container path to mount a persistent tor material. default is /tor
 * TOR_CONTROL_PWD - set the control port password to something besides "password"
 
-### Using With arm
+### Things to try
+
+The `/util/` directory contains a few scripts to play with one the host computer. Once you have a 
+private tor network up and running you can try out some of the tools in there. 
+
+**Using Arm**:
 
 With the tor control port exposed to the host, you can use arm to monitor the client. 
 ```
@@ -71,10 +76,10 @@ NOTE: There is a password to protect the control port right now. Enter "password
 
 ![arm screenshot](https://raw.githubusercontent.com/antitree/private-tor-network/master/doc/arm.png)
 
-### Things to try
+You can also connect arm to one of the containers if you know it's ip. You can find the IPs by running the 
+`get_consensus.py` script provided or however otherway you feel like. 
 
-The `/util/` directory contains a few scripts to play with one the host computer. Once you have a 
-private tor network up and running you can try out some of the tools in there. 
+```arm -i 172.19.0.3:9051```
 
 **Get Consensus**:
 
