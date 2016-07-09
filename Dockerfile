@@ -16,10 +16,18 @@
 FROM debian:jessie
 MAINTAINER Antitree antitree@protonmail.com
 
+# Sets which version of tor to use. See the Tor Projects git page for available tags
+# Examples:
+#  * tor-0.2.8.4-rc
+#  * tor-0.2.7.6
+#  * tor-0.2.7.5
+#  * release-0.2.1
+ENV TOR_VER="master"
+ENV TOR_VER="release-0.2.1"
+
 # Sets the nickname if you didn't set one, default ports, and the path
 #  where to mount the key material used by the clients. 
-ENV TOR_NICKNAME=Tor4 \
-    TERM=xterm \
+ENV TERM=xterm \
     TOR_ORPORT=7000 \
     TOR_DIRPORT=9030 \
     TOR_DIR=/tor 
@@ -41,7 +49,10 @@ RUN mkdir /src && \
     cd /src && \
     git clone https://git.torproject.org/tor.git && \
     cd tor && \
-    ./autogen.sh && \
+    git checkout ${TOR_VER}
+
+
+RUN ./autogen.sh && \
     ./configure --disable-asciidoc && \
     make && \
     make install && \
