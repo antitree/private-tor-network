@@ -16,48 +16,49 @@
 FROM debian:jessie
 MAINTAINER Antitree antitree@protonmail.com
 
+# Sets which version of tor to use. See the Tor Projects git page for available tags
+# Examples:
+#  * tor-0.2.8.4-rc
+#  * tor-0.2.7.6
+#  * tor-0.2.7.5
+#  * release-0.2.1
+ENV TOR_VER="master"
+#ENV TOR_VER="release-0.2.1"
+
 # Sets the nickname if you didn't set one, default ports, and the path
 #  where to mount the key material used by the clients. 
-ENV TOR_NICKNAME=Tor4 \
-    TERM=xterm \
+ENV TERM=xterm \
     TOR_ORPORT=7000 \
     TOR_DIRPORT=9030 \
     TOR_DIR=/tor 
 
-# Add the official torproject.org Debian Tor repository
-# - this will always build/install the latest stable version
-COPY ./config/tor-apt-sources.list /etc/apt/sources.list.d/
-
-# Build & Install:
-# - add the gpg key used to sign the packages
-# - install build dependencies (and nano)
-# - add a 'builder' user for compiling the package as a non-root user
-# - build Tor in ~/debian-packages and install the new Tor package
-# - backup torrc & cleanup all dependencies and caches
-# - adds only 13 MB to the Debian base image (without obfsproxy, which adds another 60 MB)
-# TODO: Allow selection of which version of tor to build
-RUN gpg --keyserver keys.gnupg.net --recv 886DDD89 && \
-    gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add - && \
-    apt-get update && \
-    build_deps="build-essential fakeroot devscripts quilt libssl-dev zlib1g-dev libevent-dev \
-        asciidoc docbook-xml docbook-xsl xmlto dh-apparmor libseccomp-dev dh-systemd \
-        libsystemd-dev pkg-config dh-autoreconf hardening-includes" && \
+# Install build dependencies
+RUN apt-get update && \
+    build_deps="build-essential automake libssl-dev zlib1g-dev libevent-dev ca-certificates\
+        dh-apparmor libseccomp-dev dh-systemd \
+        git" && \
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps \
-        obfsproxy \
-        tor-geoipdb \
         init-system-helpers \
-        pwgen \
-        nano && \ 
-    adduser --disabled-password --gecos "" builder && \
-    su builder -c 'mkdir -v ~/debian-packages; cd ~/debian-packages && \
-    apt-get -y source tor && \
-    cd tor-* && \
-    debuild -rfakeroot -uc -us' && \
-    dpkg -i /home/builder/debian-packages/tor_*.deb && \
-    mv -v /etc/tor/torrc /etc/tor/torrc.default && \
-    deluser --remove-home builder && \
+        pwgen 
+
+# Build tor
+# clone the latest from the tor repos
+# autogen, configure, make, and install tor
+# cleanup after
+RUN mkdir /src && \
+    cd /src && \
+    git clone https://git.torproject.org/tor.git && \
+    cd tor && \
+    git checkout ${TOR_VER}
+
+
+RUN ./autogen.sh && \
+    ./configure --disable-asciidoc && \
+    make && \
+    make install && \
     apt-get -y purge --auto-remove $build_deps && \
-    apt-get clean && rm -r /var/lib/apt/lists/*
+    apt-get clean && rm -r /var/lib/apt/lists/* && \
+    rm -rf /src/*
 
 # Copy the base tor configuration file
 COPY ./config/torrc* /etc/tor/

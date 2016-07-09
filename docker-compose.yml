@@ -1,7 +1,7 @@
 version: '2'
 services:
  da1:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   expose:
     - "7000"
     - "9030"
@@ -11,7 +11,7 @@ services:
     ## Needed to keep track of other nodes
     - ./tor:/tor
  da2:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   expose:
     - "7000"
     - "9030"
@@ -21,7 +21,7 @@ services:
     ## Needed to keep track of other nodes
     - ./tor:/tor
  da3:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   expose:
     - "7000"
     - "9030"
@@ -31,7 +31,7 @@ services:
     ## Needed to keep track of other nodes
     - ./tor:/tor
  relay:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   expose:
     - "7000"
     - "9030"
@@ -45,7 +45,7 @@ services:
     - da2
     - da3
  exit:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   expose:
     - "7000"
     - "9030"
@@ -59,7 +59,7 @@ services:
     - da2
     - da3
  client:
-  image: antitree/private-tor
+  image: antitree/private-tor-test
   ports:
     # Setups a listener on host machine
     - "9050:9050"

@@ -3,35 +3,18 @@ set -o errexit
 
 # Fudge the sleep to try and keep the consensus
 #FUDGE=$(( ( RANDOM % 100) + 20 ))
-FUDGE=30
+FUDGE=3
 
 echo -e "\n========================================================"
-# If DataDirectory or secret_id_key is mounted here, it must be owned by the debian-tor user
-chown -Rv debian-tor:debian-tor ${TOR_DIR}
 
 if [ ! -e /tor-config-done ]; then
     touch /tor-config-done   # only run this once
 
-    # Add a Nickname, if none has been set in torrc
-    if ! grep -q '^Nickname ' /etc/tor/torrc; then
-        if [ ${TOR_NICKNAME} == "Tor4" ]; then
-            # if user did not change the default Nickname, genetrate a random pronounceable one
-            RPW=$(pwgen -0A 10)
-            export TOR_NICKNAME=${ROLE}${RPW}
-            echo "Setting random Nickname: ${TOR_NICKNAME}"
-        else
-            echo "Setting chosen Nickname: ${TOR_NICKNAME}"
-        fi
-        echo -e "\nNickname ${TOR_NICKNAME}" >> /etc/tor/torrc
-    fi
-
-    # Add ContactInfo from env variable, if none has been set in torrc
-    if ! grep -q '^ContactInfo ' /etc/tor/torrc; then
-        if [  -n "${CONTACT_EMAIL}" ]; then
-            echo "Setting Contact Email: ${CONTACT_EMAIL}"
-            echo -e "\nContactInfo ${CONTACT_EMAIL}" >> /etc/tor/torrc
-        fi
-    fi
+    # Generate a random name
+    RPW=$(pwgen -0A 10)
+    export TOR_NICKNAME=${ROLE}${RPW}
+    echo "Setting random Nickname: ${TOR_NICKNAME}"
+    echo -e "\nNickname ${TOR_NICKNAME}" >> /etc/tor/torrc
 
     # Host specific modifications to the torrc file
     echo -e "DataDirectory ${TOR_DIR}/${TOR_NICKNAME}" >> /etc/tor/torrc
@@ -43,7 +26,6 @@ if [ ! -e /tor-config-done ]; then
     fi
     echo -e "HashedControlPassword ${TOR_CONTROL_PWD}" >> /etc/tor/torrc
 
-
     # Changes to the torrc file based on the desired role
     case ${ROLE} in
       DA)
@@ -54,13 +36,11 @@ if [ ! -e /tor-config-done ]; then
 	echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
 	KEYPATH=${TOR_DIR}/${TOR_NICKNAME}/keys
 	mkdir -p ${KEYPATH}
-	chown -Rv debian-tor:debian-tor ${TOR_DIR}
 	echo "password" | tor-gencert --create-identity-key -m 12 -a ${TOR_IP}:${TOR_DIRPORT} \
             -i ${KEYPATH}/authority_identity_key \
             -s ${KEYPATH}/authority_signing_key \
             -c ${KEYPATH}/authority_certificate \
 	    --passphrase-fd 0
-	chown -Rv debian-tor:debian-tor ${TOR_DIR}
 	tor --list-fingerprint --orport 1 \
     	    --dirserver "x 127.0.0.1:1 ffffffffffffffffffffffffffffffffffffffff" \
 	    --datadirectory ${TOR_DIR}/${TOR_NICKNAME}
@@ -96,7 +76,6 @@ if [ ! -e /tor-config-done ]; then
     # Buffer to let the directory authority list be built
     sleep $FUDGE
     cat ${TOR_DIR}/torrc.da >> /etc/tor/torrc
-
 
 fi
 
