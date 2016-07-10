@@ -39,20 +39,12 @@ RUN apt-get update && \
         git" && \
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps \
         init-system-helpers \
-        pwgen 
-
-# clone the latest from the tor repos
-# Use the TOR_VER env var for the branch
-RUN mkdir /src && \
+        pwgen && \
+    mkdir /src && \
     cd /src && \
     git clone https://git.torproject.org/tor.git && \
     cd tor && \
-    git checkout ${TOR_VER}
-
-# run autogen and build tor
-# cleanup unnecessary files 
-# [OPTIONAL] clean up source
-RUN cd /src/tor && \
+    git checkout ${TOR_VER} && \
     ./autogen.sh && \
     ./configure --disable-asciidoc && \
     make && \
