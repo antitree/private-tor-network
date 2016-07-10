@@ -41,18 +41,19 @@ RUN apt-get update && \
         init-system-helpers \
         pwgen 
 
-# Build tor
 # clone the latest from the tor repos
-# autogen, configure, make, and install tor
-# cleanup after
+# Use the TOR_VER env var for the branch
 RUN mkdir /src && \
     cd /src && \
     git clone https://git.torproject.org/tor.git && \
     cd tor && \
     git checkout ${TOR_VER}
 
-
-RUN ./autogen.sh && \
+# run autogen and build tor
+# cleanup unnecessary files 
+# [OPTIONAL] clean up source
+RUN cd /src/tor && \
+    ./autogen.sh && \
     ./configure --disable-asciidoc && \
     make && \
     make install && \
