@@ -22,7 +22,7 @@ MAINTAINER Antitree antitree@protonmail.com
 #  * tor-0.2.7.6
 #  * tor-0.2.7.5
 #  * release-0.2.1
-ENV TOR_VER="maint-0.2.2"
+ENV TOR_VER="maint-0.2.3"
 #ENV TOR_VER="release-0.2.1"
 
 # Sets the nickname if you didn't set one, default ports, and the path
