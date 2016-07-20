@@ -25,7 +25,7 @@ MAINTAINER Antitree antitree@protonmail.com
 #ENV TOR_VER="master"
 # NOTE sometimes the master branch doesn't compile so I'm sticking with the release
 #  feel free to change this to master to get the latest and greatest
-ENV TOR_VER="maint-0.2.3"
+ENV TOR_VER="maint-0.2.4"
 
 # Sets the nickname if you didn't set one, default ports, and the path
 #  where to mount the key material used by the clients. 
