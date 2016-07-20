@@ -23,7 +23,9 @@ MAINTAINER Antitree antitree@protonmail.com
 #  * tor-0.2.7.5
 #  * release-0.2.1
 ENV TOR_VER="release-0.2.7"
-#ENV TOR_VER="release-0.2.1"
+#ENV TOR_VER="master"
+# NOTE sometimes the master branch doesn't compile so I'm sticking with the release
+#  feel free to change this to master to get the latest and greatest
 
 # Sets the nickname if you didn't set one, default ports, and the path
 #  where to mount the key material used by the clients. 
@@ -39,20 +41,12 @@ RUN apt-get update && \
         git" && \
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps \
         init-system-helpers \
-        pwgen 
-
-# clone the latest from the tor repos
-# Use the TOR_VER env var for the branch
-RUN mkdir /src && \
+        pwgen && \
+    mkdir /src && \
     cd /src && \
     git clone https://git.torproject.org/tor.git && \
     cd tor && \
-    git checkout ${TOR_VER}
-
-# run autogen and build tor
-# cleanup unnecessary files 
-# [OPTIONAL] clean up source
-RUN cd /src/tor && \
+    git checkout ${TOR_VER} && \
     ./autogen.sh && \
     ./configure --disable-asciidoc && \
     make && \
