@@ -37,10 +37,10 @@ ENV TERM=xterm \
 # Install build dependencies
 RUN apt-get update && \
     build_temps="build-essential automake" && \ 
-    build_temps="libssl-dev zlib1g-dev libevent-dev ca-certificates\
+    build_deps="libssl-dev zlib1g-dev libevent-dev ca-certificates\
         dh-apparmor libseccomp-dev dh-systemd \
         git" && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps \
+    DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps $build_temps \
         init-system-helpers \
         pwgen && \
     mkdir /src && \
