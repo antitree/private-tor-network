@@ -47,6 +47,40 @@ Available roles right now are:
 * EXIT - exit relay
 * CLIENT - exposes the tor socks port on 9050 to the host
 
+### Onion Services
+
+If you'd like to run an onion service, you can use the `TOR_HS_PORT` and `TOR_HS_ADDRESS` environment variables. By default, there is a hidden service setup in the docker-compose.yml file. 
+
+Example configuration that will run an onion service named "hs" and a web server named "web". This will link the web service to the onion service so that "hs" will forward connections to "web" on port 80. This is done using the `links` configuration feature for docker-compose. 
+
+```
+ hs:
+  image: antitree/private-tor
+  expose:
+    - "80"
+  environment:
+    ROLE: HS
+    # This will create a hidden service that points to
+    # the service "web" which is runing nginx. You can 
+    # change this to whatever ip or hostname you want
+    TOR_HS_PORT: "80"
+    TOR_HS_ADDR: "web"
+  volumes:
+    - ./tor:/tor
+  depends_on:
+    - da1
+    - da2
+    - da3
+  links:
+    - web
+ web:
+  image: nginx
+  expose:
+    - "80"
+```
+
+NOTE: By default, this just displays the nginx start page so you may want to replace the image with a more interesting one or configure the nginx container with some static HTML to host.
+
 ### Tor configuration
 
 This configuration is based on the Tor documentation for how to run a private tor network. You should also check out [Chutney](https://gitweb.torproject.org/chutney.git/) which does something similar with separate processes instead of containers. If you need to make a modification (such as changing the timing of the DA's) edit the `config/torrc` and/or `config/torrc.da` files. You may need to modify the Dockerfile as well.
@@ -59,6 +93,8 @@ The container is built off of [chriswayg/tor-server](https://github.com/chrisway
 * TOR_DIRPORT - default is 9030
 * TOR_DIR - container path to mount a persistent tor material. default is /tor
 * TOR_CONTROL_PWD - set the control port password to something besides "password"
+* TOR_HS_PORT - port to listen for an onion service on
+* TOR_HS_ADDR - IP or hostname of service you want to point an onion service to
 
 ### Things to try
 
