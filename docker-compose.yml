@@ -78,12 +78,22 @@ services:
     - "80"
   environment:
     ROLE: HS
+    # This will create a hidden service that points to
+    # the service "web" which is runing nginx. You can 
+    # change this to whatever ip or hostname you want
     TOR_HS_PORT: "80"
-    TOR_HS_ADDR: "127.0.0.1"
+    TOR_HS_ADDR: "web"
   volumes:
     - ./tor:/tor
   depends_on:
     - da1
     - da2
     - da3
+  links:
+    - web
+ web:
+  image: nginx
+  expose:
+    - "80"
+  
 

@@ -68,6 +68,10 @@ if [ ! -e /tor-config-done ]; then
 	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
         ;;
       HS)
+	# NOTE By default the HS role will point to a service running on port 80
+	#  but there is no service running on port 80. You can either attach to 
+	#  the container and start one, or better yet, point to another docker
+	#  container on the network by setting the TOR_HS_ADDR to its IP
 	echo "Setting role to HIDDENSERVICE"
 	echo -e "HiddenServiceDir ${TOR_DIR}/${TOR_NICKNAME}/hs" >> /etc/tor/torrc
 	if [  -z "${TOR_HS_PORT}" ]; then
