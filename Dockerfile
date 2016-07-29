@@ -36,7 +36,8 @@ ENV TERM=xterm \
 
 # Install build dependencies
 RUN apt-get update && \
-    build_deps="build-essential automake libssl-dev zlib1g-dev libevent-dev ca-certificates\
+    build_temps="build-essential automake" && \ 
+    build_temps="libssl-dev zlib1g-dev libevent-dev ca-certificates\
         dh-apparmor libseccomp-dev dh-systemd \
         git" && \
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install $build_deps \
@@ -51,7 +52,7 @@ RUN apt-get update && \
     ./configure --disable-asciidoc && \
     make && \
     make install && \
-    apt-get -y purge --auto-remove $build_deps && \
+    apt-get -y purge --auto-remove $build_temps && \
     apt-get clean && rm -r /var/lib/apt/lists/* && \
     rm -rf /src/*
 
