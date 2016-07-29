@@ -61,12 +61,23 @@ if [ ! -e /tor-config-done ]; then
         echo -e "OrPort ${TOR_ORPORT}" >> /etc/tor/torrc
         echo -e "Dirport ${TOR_DIRPORT}" >> /etc/tor/torrc
         echo -e "ExitPolicy accept *:*" >> /etc/tor/torrc
-	 echo "Waiting for other DA's to come up..."
+	echo "Waiting for other DA's to come up..."
         ;;
       CLIENT)
         echo "Setting role to CLIENT"
 	echo -e "SOCKSPort 0.0.0.0:9050" >> /etc/tor/torrc
         ;;
+      HS)
+	echo "Setting role to HIDDENSERVICE"
+	echo -e "HiddenServiceDir ${TOR_DIR}/${TOR_NICKNAME}/hs" >> /etc/tor/torrc
+	if [  -z "${TOR_HS_PORT}" ]; then
+	  TOR_HS_PORT=80
+	fi
+	if [ -z "${TOR_HS_ADDR}" ]; then
+	  TOR_HS_ADDR=127.0.0.1
+	fi
+	echo -e "HiddenServicePort ${TOR_HS_PORT} ${TOR_HS_ADDR}:${TOR_HS_PORT}" >> /etc/tor/torrc
+	;;
       *)
         echo "Role variable missing"
         exit 1
