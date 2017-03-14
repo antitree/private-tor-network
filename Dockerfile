@@ -22,7 +22,7 @@ MAINTAINER Antitree antitree@protonmail.com
 #  * tor-0.2.7.6
 #  * tor-0.2.7.5
 #  * release-0.2.1
-ENV TOR_VER="release-0.2.7"
+ENV TOR_VER="release-0.2.7-redux"
 #ENV TOR_VER="master"
 # NOTE sometimes the master branch doesn't compile so I'm sticking with the release
 #  feel free to change this to master to get the latest and greatest
