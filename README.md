@@ -155,7 +155,7 @@ Here are a few things to try if you're runing into issues:
 
 This project is in no way associated with the Tor Project or their developers. Like many people I'm a fan of Tor and recommend considering ways you can help the project. Consider running a relay, donating, or writing code. 
 
-### References
-
+### Resources
+- https://github.com/andrewmichaelsmith/private-tor-network-kube Used some of this work to port to a kubernetes config
 - https://github.com/chriswayg/tor-server
 - https://www.torproject.org/docs/tor-relay-debian.html.en
