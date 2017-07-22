@@ -21,7 +21,7 @@ if [ ! -e /tor-config-done ]; then
     # Updated to handle docker stack/swarm network overlays
     TOR_IP=$(ip addr show eth1 | grep "inet" | grep -v '\/32'| awk '{print $2}' | cut -f1 -d'/')
     NICS=$(ip addr | grep 'state UP' | awk '{print $2}' | cut -f1 -d':')
-    if
+    
     echo "Address ${TOR_IP}" >> /etc/tor/torrc
     echo -e "ControlPort 0.0.0.0:9051" >> /etc/tor/torrc
     if [  -z "${TOR_CONTROL_PWD}" ]; then
