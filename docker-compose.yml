@@ -1,10 +1,10 @@
-version: '2'
+version: '3'
 services:
  da1:
   image: antitree/private-tor
-  expose:
-    - "7000"
-    - "9030"
+  #expose:
+  #  - "7000"
+  #  - "9030"
   environment:
     ROLE: DA
   volumes:
@@ -12,9 +12,9 @@ services:
     - ./tor:/tor
  da2:
   image: antitree/private-tor
-  expose:
-    - "7000"
-    - "9030"
+  #expose:
+  #  - "7000"
+  #  - "9030"
   environment:
     ROLE: DA
   volumes:
@@ -22,9 +22,9 @@ services:
     - ./tor:/tor
  da3:
   image: antitree/private-tor
-  expose:
-    - "7000"
-    - "9030"
+  #expose:
+  #  - "7000"
+  #  - "9030"
   environment:
     ROLE: DA
   volumes:
@@ -32,9 +32,9 @@ services:
     - ./tor:/tor
  relay:
   image: antitree/private-tor
-  expose:
-    - "7000"
-    - "9030"
+  #expose:
+  #  - "7000"
+  #  - "9030"
   environment:
     ROLE: RELAY
   volumes:
@@ -46,9 +46,9 @@ services:
     - da3
  exit:
   image: antitree/private-tor
-  expose:
-    - "7000"
-    - "9030"
+  #expose:
+  #  - "7000"
+  #  - "9030"
   environment:
     ROLE: EXIT
   volumes:
@@ -74,8 +74,8 @@ services:
     - da3
  hs:
   image: antitree/private-tor
-  expose:
-    - "80"
+  #expose:
+  #  - "80"
   environment:
     ROLE: HS
     # This will create a hidden service that points to
@@ -93,7 +93,7 @@ services:
     - web
  web:
   image: nginx
-  expose:
-    - "80"
+  #expose:
+  #  - "80"
   
 
