@@ -25,17 +25,24 @@ If you're going "Why do I want this?" here's a few examples:
 
 *If this needs to be said, this should never be used as a replacement for tor. This is for research purposes alone.*
 
-### Network Settings
+### Storage & Tor Network Configuration
 
-All of the required information that other nodes need to know about on the network are stored in a mapped volume: `./tor:/tor`. (I know you shouldn't do this but I needed it for a class) NOTE: This folder must exist on the host and allow the debian-tor user to create files in this directory. 
+All of the required information that other nodes need to know about on the network are stored in a named volume `torvol` which you can find the path for doing `docker volume inspect privatetornetwork_torvol` or use `docker volume ls` to find its name on your system. 
+
+If you are running multiple instances or are rebuilding it, make sure you delete this named volume or you'll accidentally use a previous iteration's keys. Easiest way is:
+
+~~~
+docker-compose rm
+docker volume rm privatetornetwork_torvol
+~~~
 
 ### Running Individual Roles
 
-You can manually build a tor network if you don't want to use docker-compose but you'll need to make sure you pass the correct DA fingerprints to each of the servers. (Don't for you automatically with docker-compose) For example, this would make the first directory authority (DA)
-`docker run -e ROLE=DA antitree/private-tor`
+You can manually build a tor network if you don't want to use docker-compose but you'll need to make sure you pass the correct DA fingerprints to each of the servers. Also make sure you create a user defined interface so that it doesn't try to use the default bridge. For example, this would make the first directory authority (DA)
+`docker run -e ROLE=DA --network tornet antitree/private-tor`
 
 Or setup a relay:
-`docker run -e ROLE=RELAY antitree/private-tor`
+`docker run -e ROLE=RELAY --network tornet antitree/private-tor`
 
 Watching the logs on a relay
 `docker logs -f {name of your container}`
@@ -46,6 +53,12 @@ Available roles right now are:
 * RELAY - non-exit relay
 * EXIT - exit relay
 * CLIENT - exposes the tor socks port on 9050 to the host
+
+### Versions
+You can run a variety of the most common tor versions by changing the image name from "antitree/private-tor:latest" to something like "antitree/private-tor:0.3.2". Current tags supported are from 0.2.6 to 0.3.5.
+
+If you'd like to try a very specific version you can rebuild the Dockerfile and edit the ["TOR_VER"](https://github.com/antitree/private-tor-network/blob/master/Dockerfile#L25) environment variable. These values should match the [branch names](https://gitweb.torproject.org/tor.git/refs/heads) from the official tor repo. 
+
 
 ### Onion Services
 
